@@ -15,7 +15,7 @@ public:
 	virtual void debug();
 	void applyForce(glm::vec2 force);
 	void applyForceToActor(Rigidbody* actor2, glm::vec2 force);
-	void setVelocity(glm::vec2 velocity);
+	virtual void setVelocity(glm::vec2 velocity);
 
 	virtual bool checkCollision(PhysicsObject* pOther) = 0;
 

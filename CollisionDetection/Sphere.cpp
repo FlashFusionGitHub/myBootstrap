@@ -16,7 +16,7 @@ Sphere::~Sphere()
 
 void Sphere::makeGizmo()
 {
-	aie::Gizmos::add2DCircle(this->getPosition(), this->getRadius(), 16, this->getColour());
+	aie::Gizmos::add2DCircle(this->getPosition(), this->getRadius(), 32, this->getColour());
 }
 
 bool Sphere::checkCollision(PhysicsObject * pOther)
