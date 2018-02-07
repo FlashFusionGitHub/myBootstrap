@@ -2,6 +2,7 @@
 #include "Rigidbody.h"
 #include "Sphere.h"
 #include "Plane.h"
+#include "AABB.h"
 #include <iostream>
 
 //function pointer array for doing our collections
@@ -148,8 +149,22 @@ bool PhysicsScene::sphere2AABB(PhysicsObject *, PhysicsObject *)
 	return false;
 }
 
-bool PhysicsScene::aabb2AABB(PhysicsObject *, PhysicsObject *)
+bool PhysicsScene::aabb2AABB(PhysicsObject *obj1, PhysicsObject *obj2)
 {
+	//try to cast objects to sphere and sphere
+	AABB* aabb1 = dynamic_cast<AABB*>(obj1);
+	AABB* aabb2 = dynamic_cast<AABB*>(obj2);
+
+	if (aabb1 != nullptr && aabb2 != nullptr) {
+		if (aabb1->getPosition().x - aabb1->getWidth() / 2 < aabb2->getPosition().x + aabb2->getWidth() / 2
+			&& aabb1->getPosition().x + aabb1->getWidth() / 2 > aabb2->getPosition().x - aabb2->getWidth() / 2
+			&& aabb1->getPosition().y - aabb1->getHeight() / 2 < aabb2->getPosition().y + aabb2->getWidth() / 2
+			&& aabb1->getPosition().y + aabb1->getHeight() / 2 > aabb2->getPosition().y - aabb2->getWidth() / 2) {
+			aabb1->setVelocity(glm::vec2(0, 0));
+			aabb2->setVelocity(glm::vec2(0, 0));
+		}
+	}
+
 	return false;
 }
 

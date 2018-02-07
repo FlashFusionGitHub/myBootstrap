@@ -5,6 +5,7 @@
 #include "PhysicsScene.h"
 #include "Sphere.h"
 #include "Plane.h"
+#include "AABB.h"
 
 class CollisionDetectionApp : public aie::Application {
 public:
@@ -28,4 +29,5 @@ protected:
 	Sphere* ball2;
 	Plane* plane1;
 	Plane* plane2;
+	AABB* aabb;
 };
