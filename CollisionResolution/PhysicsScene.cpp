@@ -128,8 +128,7 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 		// both spheres, then a collision occurred so set the
 		// velocity of both spheres to 0 (we’ll add collision resolution later)
 		if (glm::distance(sphere1->getPosition(), sphere2->getPosition()) < sphere1->getRadius() + sphere2->getRadius()) {
-			sphere1->setVelocity(glm::vec2(0, 0));
-			sphere2->setVelocity(glm::vec2(0, 0));
+			sphere1->resolveCollision(sphere2);
 		}
 	}
 
@@ -160,7 +159,8 @@ bool PhysicsScene::sphere2Plane(PhysicsObject * obj1, PhysicsObject *obj2)
 		if (intersection > 0) {
 			//set sphere velocity to zero here
 
-			sphere->setVelocity(glm::vec2(0, 0));
+			plane->resolveCollision(sphere);
+
 
 			return true;
 		}

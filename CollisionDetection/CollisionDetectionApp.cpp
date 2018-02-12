@@ -25,22 +25,24 @@ bool CollisionDetectionApp::startup() {
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
 	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setGravity(glm::vec2(0.0f, 0));
+	m_physicsScene->setGravity(glm::vec2(0.0f, 0.0f));
 	m_physicsScene->setTimeStep(0.01f);
 
-	plane1 = new Plane(glm::vec2(0, 1), 0.0f);
+	//plane1 = new Plane(glm::vec2(0.5f, 1.0f), 0.0f);
 
-	//ball1 = new Sphere(glm::vec2(-20, 20), glm::vec2(0, 0), 10.0f, 5.0f, glm::vec4(1, 0, 0, 1));
+	ball1 = new Sphere(glm::vec2(-20, 20), glm::vec2(0, 0), 10.0f, 5.0f, glm::vec4(1, 0, 0, 1));
+	ball2 = new Sphere(glm::vec2(20, 20), glm::vec2(0, 0), 10.0f, 5.0f, glm::vec4(1, 0, 0, 1));
 
-	aabb = new AABB(glm::vec2(-10, 10), glm::vec2(0, 0), 10.0f, 5.0f, 5.0f, 0, glm::vec4(1, 0, 0, 1));
-	AABB* aabb2 = new AABB(glm::vec2(10, 10), glm::vec2(0, 0), 10.0f, 5.0f, 5.0f, 0, glm::vec4(1, 0, 0, 1));
+	//aabb = new AABB(glm::vec2(20, 20), glm::vec2(0, 0), 10.0f, 5.0f, 5.0f, 0, glm::vec4(1, 1, 0, 1));
+	//AABB* aabb2 = new AABB(glm::vec2(10, 10), glm::vec2(0, 0), 10.0f, 5.0f, 5.0f, 0, glm::vec4(1, 0, 0, 1));
 
-	//m_physicsScene->addActor(ball1);
-	m_physicsScene->addActor(aabb);
-	m_physicsScene->addActor(aabb2);
-	m_physicsScene->addActor(plane1);
+	m_physicsScene->addActor(ball1);
+	m_physicsScene->addActor(ball2);
+	//m_physicsScene->addActor(aabb2);
+	//m_physicsScene->addActor(plane1);
 
-	aabb->applyForce(glm::vec2(20, 0));
+	ball2->applyForce(glm::vec2(-60, 0));
+
 
 	return true;
 }
