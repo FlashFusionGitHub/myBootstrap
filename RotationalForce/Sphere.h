@@ -7,7 +7,7 @@ class Rigidbody;
 class Sphere : public Rigidbody
 {
 public:
-	Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, glm::vec4 colour, float linearDrag, float angularDrag, float elasticity = 1.0f);
+	Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius, float rotation, glm::vec4 colour, float linearDrag, float angularDrag, float elasticity = 1.0f);
 	~Sphere();
 
 	virtual void makeGizmo();
@@ -15,6 +15,7 @@ public:
 
 	float getRadius() { return m_radius; }
 	glm::vec4 getColour() { return m_colour; }
+	float getRotation() { return m_rotation; }
 
 protected:
 	float m_radius;

@@ -2,7 +2,7 @@
 #include "PhysicsObject.h"
 #include <Gizmos.h>
 
-AABB::AABB(glm::vec2 position, glm::vec2 velocity, float mass, float width, float height, float rotation, glm::vec4 colour) : Rigidbody(ShapeType::BOX, position, velocity, rotation, mass)
+AABB::AABB(glm::vec2 position, glm::vec2 velocity, float mass, float width, float height, float rotation, glm::vec4 colour, float linearDrag, float angularDrag, float elasticity) : Rigidbody(ShapeType::BOX, position, velocity, rotation, mass, linearDrag, angularDrag, elasticity)
 {
 	m_width = width;
 	m_height = height;

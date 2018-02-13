@@ -1,4 +1,4 @@
-#include "CollisionResolutionApp.h"
+#include "RotationalForceApp.h"
 #include "Texture.h"
 #include "Font.h"
 #include "Input.h"
@@ -7,15 +7,15 @@
 #include <iostream>
 #include <time.h>
 
-CollisionResolutionApp::CollisionResolutionApp() {
+RotationalForceApp::RotationalForceApp() {
 
 }
 
-CollisionResolutionApp::~CollisionResolutionApp() {
+RotationalForceApp::~RotationalForceApp() {
 
 }
 
-bool CollisionResolutionApp::startup() {
+bool RotationalForceApp::startup() {
 	
 	//increase the 2D line count to maximize the number of objects we can draw
 	aie::Gizmos::create(255U, 255U, 65535U, 65535U);
@@ -33,15 +33,23 @@ bool CollisionResolutionApp::startup() {
 	m_physicsScene->setTimeStep(0.01f);
 
 	for (int i = 0; i < 9; i++) {
-		spheres.push_back(new Sphere(glm::vec2(m_position += 15, 0), glm::vec2(0, 0), 10.0f, 5.0f, glm::vec4(1, 0, 0, 1), 0, 0, 0.8));
+		spheres.push_back(new Sphere(glm::vec2(m_position += 15, 50), glm::vec2(rand() % 50 + 0, rand() % 50 + 0), 3.0f, 5.0f, 0, glm::vec4(rand() % 2, rand() % 2, rand() % 2, rand() % 2), 0.0f, 0.3f));
 		m_physicsScene->addActor(spheres[i]);
-		spheres[i]->applyForce(glm::vec2(rand() % 200 + 100, rand() % 200 + 100));
+		boxes.push_back(new Box(glm::vec2(m_position += 15, 30), glm::vec2(rand() % 50 + 0, rand() % 50 + 0), 3.0f, 8.0f, 8.0f, 40, glm::vec4(rand() % 2, rand() % 2, rand() % 2, rand() % 2), 0.0f, 0.3f));
+		m_physicsScene->addActor(boxes[i]);
+		spheres[i]->applyForce(glm::vec2(rand() % 50 + 0, rand() % 50 + 0), glm::vec2(20, 0));
 	}
 
-	plane = new Plane(glm::vec2(1, 0), 90);
-	plane2 = new Plane(glm::vec2(1, 0), -90);
-	plane3 = new Plane(glm::vec2(0, 1), 50);
-	plane4 = new Plane(glm::vec2(0, 1), -50);
+	box = new Box(glm::vec2(60, 50), glm::vec2(), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	box2 = new Box(glm::vec2(60, 30), glm::vec2(), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+
+	plane = new Plane(glm::vec2(1, 0), 10);
+	plane2 = new Plane(glm::vec2(1, 0), 190);
+	plane3 = new Plane(glm::vec2(0, 1), 10);
+	plane4 = new Plane(glm::vec2(0, 1), 103);
+
+	m_physicsScene->addActor(box2);
+	m_physicsScene->addActor(box);
 
 	m_physicsScene->addActor(plane);
 	m_physicsScene->addActor(plane2);
@@ -51,13 +59,13 @@ bool CollisionResolutionApp::startup() {
 	return true;
 }
 
-void CollisionResolutionApp::shutdown() {
+void RotationalForceApp::shutdown() {
 
 	delete m_font;
 	delete m_2dRenderer;
 }
 
-void CollisionResolutionApp::update(float deltaTime) {
+void RotationalForceApp::update(float deltaTime) {
 
 	// input example
 	aie::Input* input = aie::Input::getInstance();
@@ -67,17 +75,12 @@ void CollisionResolutionApp::update(float deltaTime) {
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->updateGizmos();
 
-	if (input->wasMouseButtonPressed(0)) {
-		Sphere* sphere = new Sphere(glm::vec2(input->getMouseX(), input->getMouseY()), glm::vec2(0, 0), 10, 10, glm::vec4(1, 0, 0, 1), 0, 0);
-		m_physicsScene->addActor(sphere);
-	}
-
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 }
 
-void CollisionResolutionApp::draw() {
+void RotationalForceApp::draw() {
 
 	// wipe the screen to the background colour
 	clearScreen();
@@ -88,8 +91,8 @@ void CollisionResolutionApp::draw() {
 	// draw your stuff here!
 	static float aspectRatio = 16 / 9.0f;
 
-	aie::Gizmos::draw2D(glm::ortho<float>(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -1.0f, 1.0f));
-
+	aie::Gizmos::draw2D(glm::ortho<float>(0, 200, 0 / aspectRatio, 200 / aspectRatio, -1.0f, 1.0f));
+	
 	// output some text, uses the last used colour
 	m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
 
