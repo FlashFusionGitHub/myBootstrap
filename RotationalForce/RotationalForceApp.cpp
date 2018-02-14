@@ -5,10 +5,16 @@
 #include <Gizmos.h>
 #include <glm/ext.hpp>
 #include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 RotationalForceApp::RotationalForceApp() {
+	srand((unsigned)time(NULL));
 
+	for (int i = 0; i < 100; i++) {
+		rand();
+	}
 }
 
 RotationalForceApp::~RotationalForceApp() {
@@ -22,34 +28,19 @@ bool RotationalForceApp::startup() {
 
 	m_2dRenderer = new aie::Renderer2D();
 
-	time_t srand(time(NULL));
-
 	// TODO: remember to change this when redistributing a build!
 	// the following path would be used instead: "./font/consolas.ttf"
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
 	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
-	m_physicsScene->setTimeStep(0.01f);
 
-	for (int i = 0; i < 9; i++) {
-		spheres.push_back(new Sphere(glm::vec2(m_position += 15, 50), glm::vec2(rand() % 50 + 0, rand() % 50 + 0), 3.0f, 5.0f, 0, glm::vec4(rand() % 2, rand() % 2, rand() % 2, rand() % 2), 0.0f, 0.3f));
-		m_physicsScene->addActor(spheres[i]);
-		boxes.push_back(new Box(glm::vec2(m_position += 15, 30), glm::vec2(rand() % 50 + 0, rand() % 50 + 0), 3.0f, 8.0f, 8.0f, 40, glm::vec4(rand() % 2, rand() % 2, rand() % 2, rand() % 2), 0.0f, 0.3f));
-		m_physicsScene->addActor(boxes[i]);
-		spheres[i]->applyForce(glm::vec2(rand() % 50 + 0, rand() % 50 + 0), glm::vec2(20, 0));
-	}
-
-	box = new Box(glm::vec2(60, 50), glm::vec2(), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-	box2 = new Box(glm::vec2(60, 30), glm::vec2(), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	//randomShapes();
+	boxTest();
 
 	plane = new Plane(glm::vec2(1, 0), 10);
 	plane2 = new Plane(glm::vec2(1, 0), 190);
 	plane3 = new Plane(glm::vec2(0, 1), 10);
 	plane4 = new Plane(glm::vec2(0, 1), 103);
-
-	m_physicsScene->addActor(box2);
-	m_physicsScene->addActor(box);
 
 	m_physicsScene->addActor(plane);
 	m_physicsScene->addActor(plane2);
@@ -75,6 +66,11 @@ void RotationalForceApp::update(float deltaTime) {
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->updateGizmos();
 
+	if (input->wasMouseButtonPressed(0)) {
+		Box* box = new Box(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), glm::vec2(), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+		m_physicsScene->addActor(box);
+	}
+
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
@@ -99,3 +95,31 @@ void RotationalForceApp::draw() {
 	// done drawing sprites
 	m_2dRenderer->end();
 }
+
+void RotationalForceApp::randomShapes()
+{
+	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
+	m_physicsScene->setTimeStep(0.01f);
+
+	for (int i = 0; i < 10; i++) {
+		spheres.push_back(new Sphere(glm::vec2(m_position += 15, 50), glm::vec2(rand() % 50 + 0, rand() % 50 + 0), 3.0f, 5.0f, 0, glm::vec4(rand() % 2, rand() % 2, rand() % 2, 1), 0.0f, 0.3f));
+		m_physicsScene->addActor(spheres[i]);
+		boxes.push_back(new Box(glm::vec2(m_position2 += 15, 30), glm::vec2(rand() % 50 + 0, rand() % 50 + 0), 3.0f, 8.0f, 8.0f, 40, glm::vec4(rand() % 2, rand() % 2, rand() % 2, 1), 0.0f, 0.3f));
+		m_physicsScene->addActor(boxes[i]);
+		spheres[i]->applyForce(glm::vec2(rand() % 50 + 0, rand() % 50 + 0), glm::vec2(20, 0));
+	}
+}
+
+void RotationalForceApp::boxTest()
+{
+	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
+	m_physicsScene->setTimeStep(0.01f);
+
+
+	box1 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	box2 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+
+	m_physicsScene->addActor(box1);
+	m_physicsScene->addActor(box2);
+}
+

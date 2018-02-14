@@ -20,6 +20,9 @@ public:
 	virtual void update(float deltaTime);
 	virtual void draw();
 
+	void randomShapes();
+	void boxTest();
+
 protected:
 
 	aie::Renderer2D*	m_2dRenderer;
@@ -31,12 +34,13 @@ protected:
 	std::vector<Box*> boxes;
 
 	float m_position = 0;
-
-	Box* box;
-	Box* box2;
+	float m_position2 = 0;
 
 	Plane* plane;
 	Plane* plane2;
 	Plane* plane3;
 	Plane* plane4;
+
+	Box* box1;
+	Box* box2;
 };

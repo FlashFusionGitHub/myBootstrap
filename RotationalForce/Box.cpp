@@ -1,6 +1,7 @@
 #include "Box.h"
 #include "PhysicsObject.h"
 #include <Gizmos.h>
+#include <vector>
 
 Box::Box(glm::vec2 position, glm::vec2 velocity, float mass, float width, float height, float rotation, glm::vec4 colour, float linearDrag, float angularDrag, float elasticity)
 	: Rigidbody(ShapeType::BOX, position, velocity, rotation, mass, linearDrag, angularDrag, elasticity)
@@ -42,71 +43,67 @@ bool Box::checkCollision(PhysicsObject * pOther)
 		return false;
 }
 
-bool Box::checkBoxCorners(const Box & box, glm::vec2 & contact, int & numContacts, float & pen, glm::vec2 & edgeNormal)
+bool Box::checkBoxCorners(const Box & box, glm::vec2 & contact, int & numContacts, glm::vec2 & edgeNormal, glm::vec2& contactForce)
 {
-	float minX, maxX, minY, maxY;
-	float boxW = (box.m_width / 2) * 2;
-	float boxH = (box.m_height / 2) * 2;
+	float boxW = (box.getWidth() / 2) * 2;
+	float boxH = (box.getHeight() / 2) * 2;
 
-	int numLocalContacts = 0;
-	glm::vec2 localContact(0, 0);
+	float penetration = 0;
 
-	bool first = true;
+	std::vector<glm::vec2> boxPoints;
 
-	for (float x = (-box.m_width / 2); x < boxW; x += boxW) {
-		for (float y = (-box.m_height / 2); y < boxH; y += boxH) {
-			glm::vec2 p = box.m_position + x * box.m_localX + y * box.m_localY;
-			glm::vec2 p0(glm::dot(p - m_position, m_localX), glm::dot(p - m_position, m_localY));
+	boxPoints.push_back(glm::vec2(-(box.getWidth()), -(box.getHeight())));
+	boxPoints.push_back(glm::vec2(-(box.getWidth() / 2), 0));
+	boxPoints.push_back(glm::vec2(-(box.getWidth()), box.getHeight()));
+	boxPoints.push_back(glm::vec2(0, box.getHeight() / 2));
+	boxPoints.push_back(glm::vec2(box.getWidth(), box.getHeight()));
+	boxPoints.push_back(glm::vec2(box.getWidth() / 2, 0));
+	boxPoints.push_back(glm::vec2(box.getWidth(), -(box.getHeight())));
+	boxPoints.push_back(glm::vec2(0, -(box.getHeight() / 2)));
 
-			if (first || p0.x < minX) minX = p0.x;
-			if (first || p0.x > maxX) maxX = p0.x;
-			if (first || p0.y < minY) minY = p0.y;
-			if (first || p0.y > maxY) maxY = p0.y;
-
-			if (p0.x >= -(m_width / 2) && p0.x <= (m_width / 2) && p0.y >= -(m_height/ 2) && p0.y <= (m_height / 2)) {
-				numLocalContacts++;
-				localContact += p0;	
-			}		
-			first = false;
+		// pos in worldspace
+	for (auto point : boxPoints) {
+		glm::vec2 p = box.m_position + point.x * box.m_localX + point.y * box.m_localY;
+		// position in our box's space
+		glm::vec2 p0(glm::dot(p - m_position, m_localX), glm::dot(p - m_position, m_localY));
+		float w2 = (m_width / 2), h2 = (m_height / 2);
+		if (p0.y < h2 && p0.y > -h2) {
+			if (p0.x > 0 && p0.x < w2) {
+				numContacts++;
+				contact += m_position + w2 * m_localX + p0.y * m_localY;
+				edgeNormal = m_localX;
+				penetration = w2 - p0.x;
+			}
+			if (p0.x < 0 && p0.x > -w2) {
+				numContacts++;
+				contact += m_position - w2 * m_localX + p0.y * m_localY;
+				edgeNormal = -m_localX;
+				penetration = w2 + p0.x;
+			}
+		}
+		if (p0.x < w2 && p0.x > -w2) {
+			if (p0.y > 0 && p0.y < h2) {
+				numContacts++;
+				contact += m_position + p0.x * m_localX + h2 * m_localY;
+				float pen0 = h2 - p0.y;
+				if (pen0 < penetration || penetration == 0) {
+					penetration = pen0;
+					edgeNormal = m_localY;
+				}
+			}
+			if (p0.y < 0 && p0.y > -h2) {
+				numContacts++;
+				contact += m_position + p0.x * m_localX - h2 * m_localY;
+				float pen0 = h2 + p0.y;
+				if (pen0 < penetration || penetration == 0) {
+					penetration = pen0;
+					edgeNormal = -m_localY;
+				}
+			}
 		}
 	}
-
-	if (maxX <-(m_width / 2)|| minX > (m_width / 2) || maxY < -(m_height / 2) || minY > (m_height / 2))
-		return false;
-	if (numLocalContacts == 0)
-		return false;
-
-	bool res = false;
-
-	contact += m_position + (localContact.x*m_localX + localContact.y*m_localY) / (float)numLocalContacts;
-
-	numContacts++;
-
-	float pen0 = (m_width / 2) - minX;
-
-	if (pen0 > 0 && (pen0 < pen || pen == 0)) {
-		edgeNormal = m_localX; pen = pen0; res = true; 
-	} 
-	
-	pen0 = maxX + (m_width / 2);
-
-	if (pen0 > 0 && (pen0 < pen || pen == 0)) {
-		edgeNormal = -m_localX; pen = pen0; res = true; 
-	} 
-	
-	pen0 = (m_height / 2) - minY;
-	
-	if (pen0 > 0 && (pen0 < pen || pen == 0)) { 
-		edgeNormal = m_localY; pen = pen0; res = true; 
-	} 
-	
-	pen0 = maxY + (m_height / 2);
-
-	if (pen0 > 0 && (pen0 < pen || pen == 0)) {
-		edgeNormal = -m_localY; pen = pen0; res = true; 
-	} 
-	
-	return res;
+	contactForce = penetration * edgeNormal;
+	return (penetration != 0);
 }
 
 void Box::fixedUpdate(glm::vec2 gravity, float timeStep)

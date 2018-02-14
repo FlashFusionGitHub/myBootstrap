@@ -13,16 +13,16 @@ public:
 	virtual void makeGizmo();
 	virtual bool checkCollision(PhysicsObject* pOther);
 
-	bool checkBoxCorners(const Box& box, glm::vec2& contact, int& numContacts, float &pen, glm::vec2& edgeNormal);
-	float getWidth() { return m_width; }
-	float getHeight() { return m_height; }
+	bool checkBoxCorners(const Box& box, glm::vec2& contact, int& numContacts, glm::vec2& edgeNormal, glm::vec2& contactForce);
+	float getWidth() const { return m_width; }
+	float getHeight() const { return m_height; }
 	float getRotation() { return m_rotation; }
 	void fixedUpdate(glm::vec2 gravity, float timeStep);
 
     glm::vec4 getColour() { return m_colour; }
    
-    glm::vec2 getLocalX() { return m_localX; }
-    glm::vec2 getLocalY() { return m_localY; }
+    glm::vec2 getLocalX() const { return m_localX; }
+    glm::vec2 getLocalY() const { return m_localY; }
 
 protected:
 	float m_width;

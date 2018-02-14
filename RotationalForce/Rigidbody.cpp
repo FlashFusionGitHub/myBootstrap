@@ -70,3 +70,8 @@ void Rigidbody::setVelocity(glm::vec2 velocity)
 {
 	m_velocity = velocity;
 }
+
+void Rigidbody::setPosition(glm::vec2 position)
+{
+	m_position = position;
+}

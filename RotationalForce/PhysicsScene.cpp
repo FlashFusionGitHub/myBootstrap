@@ -118,8 +118,14 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 	//try to cast objects to sphere and sphere
 	Sphere* sphere1 = dynamic_cast<Sphere*>(obj1);
 	Sphere* sphere2 = dynamic_cast<Sphere*>(obj2);
+
 	//if we are successful then test for collision
 	if (sphere1 != nullptr && sphere2 != nullptr) {
+
+		glm::vec2 delta = sphere2->getPosition() - sphere1->getPosition();
+		float distance = glm::length(delta);
+		float intersection = sphere1->getRadius() + sphere2->getRadius() - distance;
+
 		//this is where the collision detection happens
 		//you need code which sets the velocity of the two spheres to zero
 		//if they are overlapping
@@ -128,7 +134,15 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 		// both spheres, then a collision occurred so set the
 		// velocity of both spheres to 0 (we’ll add collision resolution later)
 		if (glm::distance(sphere1->getPosition(), sphere2->getPosition()) < sphere1->getRadius() + sphere2->getRadius()) {
+
+			glm::vec2 contactForce = 0.5f * (distance - (sphere1->getRadius() + sphere2->getRadius())) * delta / distance;
+
+			sphere1->setPosition(sphere1->getPosition() + contactForce);
+			sphere2->setPosition(sphere2->getPosition() - contactForce);
+
 			sphere1->resolveCollision(sphere2, 0.5f * (sphere1->getPosition() + sphere2->getPosition()));
+
+			return true;
 		}
 	}
 
@@ -157,12 +171,10 @@ bool PhysicsScene::sphere2Plane(PhysicsObject * obj1, PhysicsObject *obj2)
 		float intersection = sphere->getRadius() - sphereToPlane;
 
 		if (intersection > 0) {
+
 			//set sphere velocity to zero here
-
 			glm::vec2 contact = sphere->getPosition() + (collisionNormal * -sphere->getRadius());
-
 			plane->resolveCollision(sphere, contact);
-
 
 			return true;
 		}
@@ -187,23 +199,25 @@ bool PhysicsScene::box2Box(PhysicsObject *obj1, PhysicsObject *obj2)
 		glm::vec2 boxPos = box2->getPosition() = box->getPosition();
 
 		glm::vec2 norm(0, 0);
+		glm::vec2 contactForce1, contactForce2;
 		glm::vec2 contact(0, 0);
-		float pen = 0;
 		int numContacts = 0;
 
-		box->checkBoxCorners(*box2, contact, numContacts, pen, norm);
+		box->checkBoxCorners(*box2, contact, numContacts, norm, contactForce1);
 
-		if (box2->checkBoxCorners(*box, contact, numContacts, pen, norm)) {
+		if (box2->checkBoxCorners(*box, contact, numContacts, norm, contactForce2)) {
 			norm = -norm;
 		}
 
-		if (pen > 0) {
+		if (numContacts > 0) {
+			glm::vec2 contactForce = 0.5f * (contactForce1 - contactForce2);
+			box->setPosition(box->getPosition() - contactForce);
+			box2->setPosition(box2->getPosition() + contactForce);
+
 			box->resolveCollision(box2, contact / float(numContacts), &norm);
+			return true;
 		}
-
-		return true;
 	}
-
 	return false;
 }
 
@@ -218,6 +232,7 @@ bool PhysicsScene::box2Plane(PhysicsObject *obj1, PhysicsObject *obj2)
 		glm::vec2 contact(0, 0);
 		float contactV = 0;
 		float radius = 0.5f * std::fminf(box->getWidth(), box->getHeight());
+		float penetration = 0;
 
 		glm::vec2 planeOrigin = plane->getNormal() * plane->getDistance();
 		float comFromPlane = glm::dot(box->getPosition() - planeOrigin, plane->getNormal());
@@ -235,6 +250,15 @@ bool PhysicsScene::box2Plane(PhysicsObject *obj1, PhysicsObject *obj2)
 					numContacts++;
 					contact += p;
 					contactV += velocityIntoPlane;
+
+					if (comFromPlane >= 0) {
+						if (penetration > distFromPlane)
+							penetration = distFromPlane;
+					}
+					else {
+						if (penetration < distFromPlane)
+							penetration = distFromPlane;
+					}
 				}
 			}
 		}
@@ -252,6 +276,8 @@ bool PhysicsScene::box2Plane(PhysicsObject *obj1, PhysicsObject *obj2)
 			float mass0 = 1.0f / (1.0f / box->getMass() + (r*r) / box->getMoment());
 
 			box->applyForce(acceleration * mass0, localContact);
+
+			box->setPosition(box->getPosition() - plane->getNormal() * penetration);
 		}
 	}
 
