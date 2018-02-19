@@ -145,8 +145,6 @@ void RotationalForceApp::spawnBoxes(float deltaTime)
 {
 	m_timer += deltaTime;
 
-	std::cout << m_timer << std::endl;
-
 	glm::vec4 randomColour = glm::vec4(rand() % 2, rand() % 2, rand() % 2, 1);
 
 	Box* spawnBox = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(randomColour), 0, 0, 0);
@@ -163,8 +161,6 @@ void RotationalForceApp::spawnCircles(float deltaTime)
 		return;
 
 	m_timer += deltaTime;
-
-	std::cout << circleCount << std::endl;
 
 	glm::vec4 randomColour = glm::vec4(rand() % 2, rand() % 2, rand() % 2, 1);
 
