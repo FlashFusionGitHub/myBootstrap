@@ -39,9 +39,9 @@ bool RotationalForceApp::startup() {
 	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 
 	//randomShapes();
-	//boxTest();
+	boxTest();
 
-	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.1);
+	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
 
 	plane = new Plane(glm::vec2(1, 0), 10);
 	plane2 = new Plane(glm::vec2(1, 0), 190);
@@ -74,11 +74,16 @@ void RotationalForceApp::update(float deltaTime) {
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->updateGizmos();
 
-	spawnBoxes(deltaTime);
+	//spawnBoxes(deltaTime);
 
 	if (input->isMouseButtonDown(0)) {
-	    aie::Gizmos::add2DLine(glm::vec2(ball->getPosition()), glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), glm::vec4(1, 1, 1, 1));
+        aie::Gizmos::add2DLine(glm::vec2(ball->getPosition()), glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), glm::vec4(1, 1, 1, 1));
 		ball->applyForce(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110) - ball->getPosition(), glm::vec2());
+	}
+
+	if (input->isMouseButtonDown(1) && glm::distance(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), ball->getPosition()) < ball->getRadius()) {
+		ball->setPosition(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110));
+		ball->setVelocity(glm::vec2(0, 0));
 	}
 
 	// exit the application
@@ -124,10 +129,11 @@ void RotationalForceApp::boxTest()
 {
 	m_physicsScene->setTimeStep(0.01f);
 
-	box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
-	box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-	box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
-	box4 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, PI / 4, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
+	box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0.3);
+	box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, PI / 4, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
+	box4 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0.3);
+
 	m_physicsScene->addActor(box1);
 	m_physicsScene->addActor(box2);
 	m_physicsScene->addActor(box3);
