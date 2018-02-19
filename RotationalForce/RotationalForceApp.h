@@ -22,6 +22,7 @@ public:
 
 	void randomShapes();
 	void boxTest();
+	void spawnBoxes(float deltaTime);
 
 protected:
 
@@ -41,6 +42,13 @@ protected:
 	Plane* plane3;
 	Plane* plane4;
 
+	Sphere* ball;
+
 	Box* box1;
 	Box* box2;
+	Box* box3;
+	Box* box4;
+
+	float m_timer = 0.0f;
+	float m_resetTimer = 0.0f;
 };

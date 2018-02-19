@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define PI 3.14159265359
+
 RotationalForceApp::RotationalForceApp() {
 	srand((unsigned)time(NULL));
 
@@ -34,18 +36,24 @@ bool RotationalForceApp::startup() {
 
 	m_physicsScene = new PhysicsScene();
 
+	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
+
 	//randomShapes();
-	boxTest();
+	//boxTest();
+
+	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.1);
 
 	plane = new Plane(glm::vec2(1, 0), 10);
 	plane2 = new Plane(glm::vec2(1, 0), 190);
-	plane3 = new Plane(glm::vec2(0, 1), 10);
+    plane3 = new Plane(glm::vec2(0, 1), 10);
 	plane4 = new Plane(glm::vec2(0, 1), 103);
 
 	m_physicsScene->addActor(plane);
 	m_physicsScene->addActor(plane2);
 	m_physicsScene->addActor(plane3);
 	m_physicsScene->addActor(plane4);
+
+	m_physicsScene->addActor(ball);
 
 	return true;
 }
@@ -66,9 +74,11 @@ void RotationalForceApp::update(float deltaTime) {
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->updateGizmos();
 
-	if (input->wasMouseButtonPressed(0)) {
-		Box* box = new Box(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), glm::vec2(), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-		m_physicsScene->addActor(box);
+	spawnBoxes(deltaTime);
+
+	if (input->isMouseButtonDown(0)) {
+	    aie::Gizmos::add2DLine(glm::vec2(ball->getPosition()), glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), glm::vec4(1, 1, 1, 1));
+		ball->applyForce(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110) - ball->getPosition(), glm::vec2());
 	}
 
 	// exit the application
@@ -112,14 +122,32 @@ void RotationalForceApp::randomShapes()
 
 void RotationalForceApp::boxTest()
 {
-	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 	m_physicsScene->setTimeStep(0.01f);
 
-
-	box1 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-	box2 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-
+	box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
+	box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
+	box4 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
 	m_physicsScene->addActor(box1);
 	m_physicsScene->addActor(box2);
+	m_physicsScene->addActor(box3);
+	m_physicsScene->addActor(box4);
 }
+
+void RotationalForceApp::spawnBoxes(float deltaTime)
+{
+	m_timer += deltaTime;
+
+	std::cout << m_timer << std::endl;
+
+	glm::vec4 randomColour = glm::vec4(rand() % 2, rand() % 2, rand() % 2, 1);
+
+	Box* spawnBox = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(randomColour), 0, 0, 0);
+
+	if (m_timer >= 3.0f) {
+		m_timer = m_resetTimer;
+		m_physicsScene->addActor(spawnBox);
+	}
+}
+
 

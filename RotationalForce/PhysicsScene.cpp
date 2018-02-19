@@ -345,6 +345,7 @@ bool PhysicsScene::box2Sphere(PhysicsObject *obj1, PhysicsObject *obj2)
 			box->resolveCollision(sphere, contact, direction);
 		}
 		delete direction;
+		return true;
 	}
 	return false;
 }

@@ -2,6 +2,7 @@
 #include "PhysicsObject.h"
 #include <Gizmos.h>
 #include <vector>
+#include <iostream>
 
 Box::Box(glm::vec2 position, glm::vec2 velocity, float mass, float width, float height, float rotation, glm::vec4 colour, float linearDrag, float angularDrag, float elasticity)
 	: Rigidbody(ShapeType::BOX, position, velocity, rotation, mass, linearDrag, angularDrag, elasticity)
@@ -19,8 +20,6 @@ Box::~Box()
 
 void Box::makeGizmo()
 {
-	//aie::Gizmos::add2DAABBFilled(this->getPosition(), glm::vec2(this->getWidth(), this->getHeight()), this->getColour());
-
 	glm::vec2 p1 = m_position - m_localX * (m_width / 2) - m_localY * (m_height / 2);
 	glm::vec2 p2 = m_position + m_localX * (m_width / 2) - m_localY * (m_height / 2);
 	glm::vec2 p3 = m_position - m_localX * (m_width / 2) + m_localY * (m_height / 2);
@@ -52,13 +51,13 @@ bool Box::checkBoxCorners(const Box & box, glm::vec2 & contact, int & numContact
 
 	std::vector<glm::vec2> boxPoints;
 
-	boxPoints.push_back(glm::vec2(-(box.getWidth()), -(box.getHeight())));
+	boxPoints.push_back(glm::vec2(-(box.getWidth() / 2), -(box.getHeight() / 2)));
 	boxPoints.push_back(glm::vec2(-(box.getWidth() / 2), 0));
-	boxPoints.push_back(glm::vec2(-(box.getWidth()), box.getHeight()));
+	boxPoints.push_back(glm::vec2(-(box.getWidth() / 2), box.getHeight() / 2));
 	boxPoints.push_back(glm::vec2(0, box.getHeight() / 2));
-	boxPoints.push_back(glm::vec2(box.getWidth(), box.getHeight()));
+	boxPoints.push_back(glm::vec2(box.getWidth() / 2, box.getHeight() / 2));
 	boxPoints.push_back(glm::vec2(box.getWidth() / 2, 0));
-	boxPoints.push_back(glm::vec2(box.getWidth(), -(box.getHeight())));
+	boxPoints.push_back(glm::vec2(box.getWidth() / 2, -(box.getHeight() / 2)));
 	boxPoints.push_back(glm::vec2(0, -(box.getHeight() / 2)));
 
 		// pos in worldspace
@@ -66,7 +65,9 @@ bool Box::checkBoxCorners(const Box & box, glm::vec2 & contact, int & numContact
 		glm::vec2 p = box.m_position + point.x * box.m_localX + point.y * box.m_localY;
 		// position in our box's space
 		glm::vec2 p0(glm::dot(p - m_position, m_localX), glm::dot(p - m_position, m_localY));
+
 		float w2 = (m_width / 2), h2 = (m_height / 2);
+
 		if (p0.y < h2 && p0.y > -h2) {
 			if (p0.x > 0 && p0.x < w2) {
 				numContacts++;
