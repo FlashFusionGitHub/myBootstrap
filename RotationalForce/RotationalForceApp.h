@@ -6,6 +6,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Box.h"
+#include "Input.h"
 #include <vector>
 
 class RotationalForceApp : public aie::Application {
@@ -23,6 +24,7 @@ public:
 	void randomShapes();
 	void boxTest();
 	void spawnBoxes(float deltaTime);
+	void spawnCircles(float deltaTime);
 
 protected:
 
@@ -43,6 +45,7 @@ protected:
 	Plane* plane4;
 
 	Sphere* ball;
+	Sphere* spawnedSphere;
 
 	Box* box1;
 	Box* box2;
@@ -51,4 +54,6 @@ protected:
 
 	float m_timer = 0.0f;
 	float m_resetTimer = 0.0f;
+
+	int circleCount = 0;
 };

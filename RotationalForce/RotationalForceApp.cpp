@@ -1,7 +1,6 @@
 #include "RotationalForceApp.h"
 #include "Texture.h"
 #include "Font.h"
-#include "Input.h"
 #include <Gizmos.h>
 #include <glm/ext.hpp>
 #include <iostream>
@@ -39,7 +38,7 @@ bool RotationalForceApp::startup() {
 	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 
 	//randomShapes();
-	boxTest();
+	//boxTest();
 
 	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
 
@@ -74,10 +73,12 @@ void RotationalForceApp::update(float deltaTime) {
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->updateGizmos();
 
-	//spawnBoxes(deltaTime);
+	spawnBoxes(deltaTime);
+	//spawnCircles(deltaTime);
+	
 
 	if (input->isMouseButtonDown(0)) {
-        aie::Gizmos::add2DLine(glm::vec2(ball->getPosition()), glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), glm::vec4(1, 1, 1, 1));
+	  aie::Gizmos::add2DLine(glm::vec2(ball->getPosition()), glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), glm::vec4(1, 1, 1, 1));
 		ball->applyForce(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110) - ball->getPosition(), glm::vec2());
 	}
 
@@ -154,6 +155,31 @@ void RotationalForceApp::spawnBoxes(float deltaTime)
 		m_timer = m_resetTimer;
 		m_physicsScene->addActor(spawnBox);
 	}
+}
+
+void RotationalForceApp::spawnCircles(float deltaTime)
+{
+	if (circleCount >= 10)
+		return;
+
+	m_timer += deltaTime;
+
+	std::cout << circleCount << std::endl;
+
+	glm::vec4 randomColour = glm::vec4(rand() % 2, rand() % 2, rand() % 2, 1);
+
+	spawnedSphere = new Sphere(glm::vec2(50, 50), glm::vec2(), 5, 5, 0, randomColour, 0, 0, 1);
+
+	if (m_timer >= 3.0f) {
+		m_timer = m_resetTimer;
+		circleCount += 1;
+		m_physicsScene->addActor(spawnedSphere);
+	}
+
+	//if (input->isMouseButtonDown(1) && glm::distance(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), spawnedSphere->getPosition()) < spawnedSphere->getRadius()) {
+	//	spawnedSphere->setPosition(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110));
+	//	spawnedSphere->setVelocity(glm::vec2(0, 0));
+	//}
 }
 
 
