@@ -38,7 +38,7 @@ bool RotationalForceApp::startup() {
 	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 
 	//randomShapes();
-	//boxTest();
+	boxTest();
 
 	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
 
@@ -73,7 +73,7 @@ void RotationalForceApp::update(float deltaTime) {
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->updateGizmos();
 
-	spawnBoxes(deltaTime);
+	//spawnBoxes(deltaTime);
 	//spawnCircles(deltaTime);
 	
 
@@ -130,15 +130,16 @@ void RotationalForceApp::boxTest()
 {
 	m_physicsScene->setTimeStep(0.01f);
 
-	box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, PI / 4, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
-	box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0.3);
-	box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, PI / 4, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
+	box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
+	box2 = new Box(glm::vec2(50.1, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0.3);
+	box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.3);
 	box4 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0.3);
 
 	m_physicsScene->addActor(box1);
 	m_physicsScene->addActor(box2);
 	m_physicsScene->addActor(box3);
 	m_physicsScene->addActor(box4);
+
 }
 
 void RotationalForceApp::spawnBoxes(float deltaTime)
@@ -149,7 +150,7 @@ void RotationalForceApp::spawnBoxes(float deltaTime)
 
 	Box* spawnBox = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(randomColour), 0, 0, 0);
 
-	if (m_timer >= 3.0f) {
+	if (m_timer >= 2.0f) {
 		m_timer = m_resetTimer;
 		m_physicsScene->addActor(spawnBox);
 	}

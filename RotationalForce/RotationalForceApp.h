@@ -56,4 +56,6 @@ protected:
 	float m_resetTimer = 0.0f;
 
 	int circleCount = 0;
+
+
 };
