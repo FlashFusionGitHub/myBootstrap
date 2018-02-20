@@ -6,7 +6,6 @@
 #include <glm/ext.hpp>
 
 CollisionDetectionApp::CollisionDetectionApp() {
-
 }
 
 CollisionDetectionApp::~CollisionDetectionApp() {

@@ -1,4 +1,4 @@
-#include "RotationalForceApp.h"
+#include "JointsAndSpringsApp.h"
 #include "Texture.h"
 #include "Font.h"
 #include <Gizmos.h>
@@ -8,21 +8,15 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define PI 3.14159265359
-
-RotationalForceApp::RotationalForceApp() {
-	srand((unsigned)time(NULL));
-
-	for (int i = 0; i < 100; i++) {
-		rand();
-	}
-}
-
-RotationalForceApp::~RotationalForceApp() {
+JointsAndSpringsApp::JointsAndSpringsApp() {
 
 }
 
-bool RotationalForceApp::startup() {
+JointsAndSpringsApp::~JointsAndSpringsApp() {
+
+}
+
+bool JointsAndSpringsApp::startup() {
 	
 	//increase the 2D line count to maximize the number of objects we can draw
 	aie::Gizmos::create(255U, 255U, 65535U, 65535U);
@@ -38,13 +32,13 @@ bool RotationalForceApp::startup() {
 	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 
 	//randomShapes();
-	//boxTest();
+	boxTest();
 
 	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.8);
 
 	plane = new Plane(glm::vec2(1, 0), 10);
 	plane2 = new Plane(glm::vec2(1, 0), 190);
-    plane3 = new Plane(glm::vec2(0, 1), 10);
+	plane3 = new Plane(glm::vec2(0, 1), 10);
 	plane4 = new Plane(glm::vec2(0, 1), 103);
 
 	m_physicsScene->addActor(plane);
@@ -57,13 +51,13 @@ bool RotationalForceApp::startup() {
 	return true;
 }
 
-void RotationalForceApp::shutdown() {
+void JointsAndSpringsApp::shutdown() {
 
 	delete m_font;
 	delete m_2dRenderer;
 }
 
-void RotationalForceApp::update(float deltaTime) {
+void JointsAndSpringsApp::update(float deltaTime) {
 
 	// input example
 	aie::Input* input = aie::Input::getInstance();
@@ -74,7 +68,7 @@ void RotationalForceApp::update(float deltaTime) {
 
 		m_physicsScene->update(deltaTime);
 
-		spawnBoxes(deltaTime);
+		//spawnBoxes(deltaTime);
 		//spawnCircles(deltaTime);
 
 	}
@@ -113,7 +107,7 @@ void RotationalForceApp::update(float deltaTime) {
 	}
 }
 
-void RotationalForceApp::draw() {
+void JointsAndSpringsApp::draw() {
 
 	// wipe the screen to the background colour
 	clearScreen();
@@ -138,7 +132,7 @@ void RotationalForceApp::draw() {
 	m_2dRenderer->end();
 }
 
-void RotationalForceApp::randomShapes()
+void JointsAndSpringsApp::randomShapes()
 {
 	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 	m_physicsScene->setTimeStep(0.01f);
@@ -152,23 +146,25 @@ void RotationalForceApp::randomShapes()
 	}
 }
 
-void RotationalForceApp::boxTest()
+void JointsAndSpringsApp::boxTest()
 {
 	m_physicsScene->setTimeStep(0.01f);
 
-	box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
-	box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-	box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
+	//box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
+	//box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	//box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
 	box4 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
 
-	m_physicsScene->addActor(box1);
-	m_physicsScene->addActor(box2);
-	m_physicsScene->addActor(box3);
+	box4->setKinematic(true);
+
+	//m_physicsScene->addActor(box1);
+	//m_physicsScene->addActor(box2);
+	//m_physicsScene->addActor(box3);
 	m_physicsScene->addActor(box4);
 
 }
 
-void RotationalForceApp::spawnBoxes(float deltaTime)
+void JointsAndSpringsApp::spawnBoxes(float deltaTime)
 {
 	m_timer += deltaTime;
 
@@ -186,7 +182,7 @@ void RotationalForceApp::spawnBoxes(float deltaTime)
 	}
 }
 
-void RotationalForceApp::spawnCircles(float deltaTime)
+void JointsAndSpringsApp::spawnCircles(float deltaTime)
 {
 	if (circleCount >= 10)
 		return;
@@ -209,7 +205,7 @@ void RotationalForceApp::spawnCircles(float deltaTime)
 	//}
 }
 
-void RotationalForceApp::execute(std::string & command)
+void JointsAndSpringsApp::execute(std::string & command)
 {
 	aie::Input* input = aie::Input::getInstance();
 	std::vector<std::string> commandParams = split(command, ' ');
@@ -219,7 +215,7 @@ void RotationalForceApp::execute(std::string & command)
 	command = "";
 }
 
-std::vector<std::string> RotationalForceApp::split(const std::string string, char delim)
+std::vector<std::string> JointsAndSpringsApp::split(const std::string string, char delim)
 {
 	std::string temp = "";
 
@@ -238,5 +234,3 @@ std::vector<std::string> RotationalForceApp::split(const std::string string, cha
 
 	return ret;
 }
-
-

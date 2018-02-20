@@ -9,11 +9,11 @@
 #include "Input.h"
 #include <vector>
 
-class RotationalForceApp : public aie::Application {
+class JointsAndSpringsApp : public aie::Application {
 public:
 
-	RotationalForceApp();
-	virtual ~RotationalForceApp();
+	JointsAndSpringsApp();
+	virtual ~JointsAndSpringsApp();
 
 	virtual bool startup();
 	virtual void shutdown();

@@ -38,7 +38,7 @@ bool Application::createWindow(const char* title, int width, int height, bool fu
 
 	glfwSetWindowSizeCallback(m_window, [](GLFWwindow*, int w, int h){ glViewport(0, 0, w, h); });
 
-	glClearColor(0, 0, 0, 1);
+	glClearColor(0.5f, 0.5f, 0.5f, 1);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
