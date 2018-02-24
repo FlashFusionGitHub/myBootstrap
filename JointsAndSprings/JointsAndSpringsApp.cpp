@@ -29,7 +29,7 @@ bool JointsAndSpringsApp::startup() {
 
 	m_physicsScene = new PhysicsScene();
 
-	m_physicsScene->setGravity(glm::vec2(0.0f, 0.0f));
+	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 
 	//randomShapes();
 	boxTest();
@@ -105,10 +105,21 @@ void JointsAndSpringsApp::update(float deltaTime) {
 	for (auto it = m_physicsObject.begin(); it != m_physicsObject.end(); it++) {
 		PhysicsObject* obj = *it;
 
+		Rigidbody* rb = (Rigidbody*)obj;
+
 		if (obj->isInside(m_mousePoint) && input->isMouseButtonDown(1)) {
-			Rigidbody* rb = (Rigidbody*)obj;
 			rb->setPosition(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110));
 			rb->setVelocity(glm::vec2(0, 0));
+
+			float currentRotation = rb->getRotation();
+
+			if (input->isKeyDown(aie::INPUT_KEY_Q)) {
+				rb->setRotation(currentRotation -= deltaTime * 2.0f);
+			}
+			if (input->isKeyDown(aie::INPUT_KEY_E)) {
+				rb->setRotation(currentRotation += deltaTime * 2.0f);
+			}
+
 		}
 	}
 

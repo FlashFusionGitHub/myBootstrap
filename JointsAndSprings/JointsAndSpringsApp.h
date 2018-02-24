@@ -28,8 +28,6 @@ public:
 	void spawnCircles(float deltaTime);
 	void springTest();
 
-	void whackingStick();
-
 protected:
 
 	aie::Renderer2D*	m_2dRenderer;

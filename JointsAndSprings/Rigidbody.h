@@ -28,6 +28,8 @@ public:
 	float getMoment() { return m_moment; }
 	float getAngularVelocity() { return m_angularVelocity; }
 
+	void setRotation(float rotation) { m_rotation = rotation; };
+
 	void setKinematic(bool state) { m_isKinematic = state; }
 	bool isKinematic() { return m_isKinematic; }
 
