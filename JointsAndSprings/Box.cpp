@@ -1,5 +1,6 @@
 #include "Box.h"
 #include "PhysicsObject.h"
+#include <glm/ext.hpp>
 #include <Gizmos.h>
 #include <vector>
 #include <iostream>
@@ -116,4 +117,11 @@ void Box::fixedUpdate(glm::vec2 gravity, float timeStep)
 	float sn = std::sinf(m_rotation);
 	m_localX = glm::normalize(glm::vec2(cs, sn));
 	m_localY = glm::normalize(glm::vec2(-sn, cs));
+}
+
+bool Box::isInside(glm::vec2 pt)
+{
+	pt -= this->getPosition();
+	glm::vec2 boxPt(glm::dot(pt, this->getLocalX()), glm::dot(pt, this->getLocalY()));
+	return (fabs(boxPt.x) < m_width * 0.5f && fabs(boxPt.y) < m_height * 0.5f);
 }

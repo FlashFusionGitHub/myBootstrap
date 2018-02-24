@@ -29,17 +29,20 @@ bool JointsAndSpringsApp::startup() {
 
 	m_physicsScene = new PhysicsScene();
 
-	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
+	m_physicsScene->setGravity(glm::vec2(0.0f, 0.0f));
 
 	//randomShapes();
 	boxTest();
+	springTest();
 
-	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.8);
+	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 1);
 
 	plane = new Plane(glm::vec2(1, 0), 10);
 	plane2 = new Plane(glm::vec2(1, 0), 190);
 	plane3 = new Plane(glm::vec2(0, 1), 10);
 	plane4 = new Plane(glm::vec2(0, 1), 103);
+
+	m_physicsObject.push_back(ball);
 
 	m_physicsScene->addActor(plane);
 	m_physicsScene->addActor(plane2);
@@ -75,14 +78,38 @@ void JointsAndSpringsApp::update(float deltaTime) {
 
 	m_physicsScene->updateGizmos();
 
-	if (input->isMouseButtonDown(0)) {
-		aie::Gizmos::add2DLine(glm::vec2(ball->getPosition()), glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), glm::vec4(1, 1, 1, 1));
-		ball->applyForce(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110) - ball->getPosition(), glm::vec2());
+
+	//Whacking Stick with left mouse button
+	bool mouseDown = input->isMouseButtonDown(0);
+
+	m_mousePoint = glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110);
+
+	if (mouseDown != m_mouseDown) {
+		if (mouseDown) {
+			m_contactPoint = m_mousePoint;
+		}
+		else {
+			for (auto it = m_physicsObject.begin(); it != m_physicsObject.end(); it++) {
+				PhysicsObject* obj = *it;
+
+				if (obj->isInside(m_mousePoint)) {
+					Rigidbody* rb = (Rigidbody*)obj;
+					rb->applyForce(10.0f * (m_mousePoint - m_contactPoint), m_contactPoint - rb->getPosition());
+				}
+			}
+		}
+		m_mouseDown = mouseDown;
 	}
 
-	if (input->isMouseButtonDown(1) && glm::distance(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), ball->getPosition()) < ball->getRadius()) {
-		ball->setPosition(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110));
-		ball->setVelocity(glm::vec2(0, 0));
+	// Move Objects with right mouse button
+	for (auto it = m_physicsObject.begin(); it != m_physicsObject.end(); it++) {
+		PhysicsObject* obj = *it;
+
+		if (obj->isInside(m_mousePoint) && input->isMouseButtonDown(1)) {
+			Rigidbody* rb = (Rigidbody*)obj;
+			rb->setPosition(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110));
+			rb->setVelocity(glm::vec2(0, 0));
+		}
 	}
 
 	// exit the application
@@ -91,19 +118,6 @@ void JointsAndSpringsApp::update(float deltaTime) {
 
 	if (input->wasKeyPressed(aie::INPUT_KEY_GRAVE_ACCENT)) {
 		isPaused = !isPaused;
-		command = "";
-	}
-
-	if (isPaused) {
-		if (input->wasKeyPressed(aie::INPUT_KEY_ENTER))
-			execute(command);
-
-		if (input->wasKeyPressed(aie::INPUT_KEY_BACKSPACE))
-			command = command.substr(0, command.length() - 1);
-
-		for (auto chars : input->getPressedCharacters()) {
-			command += (char)chars;
-		}
 	}
 }
 
@@ -118,14 +132,15 @@ void JointsAndSpringsApp::draw() {
 	// draw your stuff here!
 	static float aspectRatio = 16 / 9.0f;
 
+	if (m_mouseDown) {
+		aie::Gizmos::add2DLine(m_contactPoint, m_mousePoint, glm::vec4(1, 1, 1, 1));
+	}
+
 	aie::Gizmos::draw2D(glm::ortho<float>(0, 200, 0 / aspectRatio, 200 / aspectRatio, -1.0f, 1.0f));
 
 	if (isPaused) {
-		float length = m_font->getStringWidth(arrow.c_str());
-
 		m_2dRenderer->setRenderColour(1, 1, 1, 1);
-		m_2dRenderer->drawText(m_font, arrow.c_str(), 10, 10);
-		m_2dRenderer->drawText(m_font, command.c_str(), 10 + length, 10);
+		m_2dRenderer->drawText(m_font, "PAUSED", 10, 10);
 	}
 
 	// done drawing sprites
@@ -150,16 +165,21 @@ void JointsAndSpringsApp::boxTest()
 {
 	m_physicsScene->setTimeStep(0.01f);
 
-	//box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
-	//box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-	//box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
+	box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
+	box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
 	box4 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
 
 	box4->setKinematic(true);
 
-	//m_physicsScene->addActor(box1);
-	//m_physicsScene->addActor(box2);
-	//m_physicsScene->addActor(box3);
+	m_physicsObject.push_back(box1);
+	m_physicsObject.push_back(box2);
+	m_physicsObject.push_back(box3);
+	m_physicsObject.push_back(box4);
+
+	m_physicsScene->addActor(box1);
+	m_physicsScene->addActor(box2);
+	m_physicsScene->addActor(box3);
 	m_physicsScene->addActor(box4);
 
 }
@@ -168,7 +188,7 @@ void JointsAndSpringsApp::spawnBoxes(float deltaTime)
 {
 	m_timer += deltaTime;
 
-	if (boxCount >= 7)
+	if (boxCount >= 3)
 		return;
 
 	glm::vec4 randomColour = glm::vec4(rand() % 2, rand() % 2, rand() % 2, 1);
@@ -178,6 +198,7 @@ void JointsAndSpringsApp::spawnBoxes(float deltaTime)
 	if (m_timer >= 2.0f) {
 		m_timer = m_resetTimer;
 		boxCount += 1;
+		m_physicsObject.push_back(spawnBox);
 		m_physicsScene->addActor(spawnBox);
 	}
 }
@@ -196,41 +217,23 @@ void JointsAndSpringsApp::spawnCircles(float deltaTime)
 	if (m_timer >= 3.0f) {
 		m_timer = m_resetTimer;
 		circleCount += 1;
+		m_physicsObject.push_back(spawnedSphere);
 		m_physicsScene->addActor(spawnedSphere);
 	}
-
-	//if (input->isMouseButtonDown(1) && glm::distance(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110), spawnedSphere->getPosition()) < spawnedSphere->getRadius()) {
-	//	spawnedSphere->setPosition(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110));
-	//	spawnedSphere->setVelocity(glm::vec2(0, 0));
-	//}
 }
 
-void JointsAndSpringsApp::execute(std::string & command)
+void JointsAndSpringsApp::springTest()
 {
-	aie::Input* input = aie::Input::getInstance();
-	std::vector<std::string> commandParams = split(command, ' ');
+	Sphere* ball = new Sphere(glm::vec2(70, 60), glm::vec2(), 10, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	Sphere* ball2 = new Sphere(glm::vec2(70, 40), glm::vec2(), 10, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	spring = new Spring(ball, ball2, 5, 0.5f, 1);
 
-	//logic
+	ball->setKinematic(true);
 
-	command = "";
-}
+	m_physicsObject.push_back(ball);
+	m_physicsObject.push_back(ball2);
 
-std::vector<std::string> JointsAndSpringsApp::split(const std::string string, char delim)
-{
-	std::string temp = "";
-
-	std::vector<std::string> ret;
-
-	for (char chars : string) {
-		if (chars != delim)
-			temp += chars;
-		else {
-			if (temp.length() > 0)
-				ret.push_back(temp);
-			temp.clear();
-		}
-	}
-	ret.push_back(temp);
-
-	return ret;
+	m_physicsScene->addActor(ball);
+	m_physicsScene->addActor(ball2);
+	m_physicsScene->addActor(spring);
 }

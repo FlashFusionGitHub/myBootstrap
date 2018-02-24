@@ -34,3 +34,8 @@ bool Sphere::checkCollision(PhysicsObject * pOther)
 	else
 		return false;
 }
+
+bool Sphere::isInside(glm::vec2 pt)
+{
+	return (glm::distance(pt, this->getPosition()) < this->getRadius());
+}

@@ -18,6 +18,8 @@ public:
 	float getHeight() const { return m_height; }
 	float getRotation() { return m_rotation; }
 	void fixedUpdate(glm::vec2 gravity, float timeStep);
+	
+	bool isInside(glm::vec2 pt);
 
     glm::vec4 getColour() { return m_colour; }
    

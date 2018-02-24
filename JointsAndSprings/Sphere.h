@@ -17,6 +17,8 @@ public:
 	glm::vec4 getColour() { return m_colour; }
 	float getRotation() { return m_rotation; }
 
+	bool isInside(glm::vec2 pt);
+
 protected:
 	float m_radius;
 	glm::vec4 m_colour;

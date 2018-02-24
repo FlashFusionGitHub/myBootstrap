@@ -6,6 +6,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Box.h"
+#include "Spring.h"
 #include "Input.h"
 #include <vector>
 
@@ -25,6 +26,9 @@ public:
 	void boxTest();
 	void spawnBoxes(float deltaTime);
 	void spawnCircles(float deltaTime);
+	void springTest();
+
+	void whackingStick();
 
 protected:
 
@@ -52,6 +56,8 @@ protected:
 	Box* box3;
 	Box* box4;
 
+	Spring* spring;
+
 	float m_timer = 0.0f;
 	float m_resetTimer = 0.0f;
 
@@ -60,11 +66,9 @@ protected:
 
 	bool isPaused = false;
 
-	std::string command;
-	const std::string arrow = " > ";
-
-
-private:
-	void execute(std::string& command);
-	std::vector<std::string> split(const std::string string, char delim);
+	//whacking stick
+	glm::vec2 m_contactPoint;
+	glm::vec2 m_mousePoint;
+	bool m_mouseDown;
+	std::vector<PhysicsObject*> m_physicsObject;
 };

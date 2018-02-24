@@ -86,6 +86,9 @@ void PhysicsScene::checkForCollision()
 			int shapeId1 = object1->getShapeID();
 			int shapeId2 = object2->getShapeID();
 
+			if (shapeId1 < 0 || shapeId2 < 0)
+				continue;
+
 			//using function pointers
 			int functionIdx = (shapeId1 * SHAPE_COUNT) + shapeId2;
 			fn collisionFunctionPtr = collisionFunctionArray[functionIdx];
@@ -137,8 +140,17 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 
 			glm::vec2 contactForce = 0.5f * (distance - (sphere1->getRadius() + sphere2->getRadius())) * delta / distance;
 
-			sphere1->setPosition(sphere1->getPosition() + contactForce);
-			sphere2->setPosition(sphere2->getPosition() - contactForce);
+			// move each shape away in the direction of penitration 
+			if (!sphere1->isKinematic() && !sphere2->isKinematic()) {
+				sphere1->setPosition(sphere1->getPosition() + contactForce);
+				sphere2->setPosition(sphere2->getPosition() - contactForce);
+			}
+			else if (!sphere1->isKinematic()) {
+				sphere1->setPosition(sphere1->getPosition() + contactForce);
+			}
+			else {
+				sphere2->setPosition(sphere2->getPosition() - contactForce);
+			}
 
 			sphere1->resolveCollision(sphere2, 0.5f * (sphere1->getPosition() + sphere2->getPosition()));
 
@@ -211,11 +223,19 @@ bool PhysicsScene::box2Box(PhysicsObject *obj1, PhysicsObject *obj2)
 
 		if (numContacts > 0) {
 			glm::vec2 contactForce = 0.5f * (contactForce1 - contactForce2);
-			box->setPosition(box->getPosition() - contactForce);
-			box2->setPosition(box2->getPosition() + contactForce);
+
+			if (!box->isKinematic() && !box2->isKinematic()) {
+				box->setPosition(box->getPosition() - contactForce);
+				box2->setPosition(box2->getPosition() + contactForce);
+			}
+			else if (!box->isKinematic()) {
+				box->setPosition(box->getPosition() - contactForce);
+			}
+			else {
+				box2->setPosition(box2->getPosition() + contactForce);
+			}
 
 			box->resolveCollision(box2, contact / float(numContacts), &norm);
-
 
 			return true;
 		}

@@ -3,6 +3,7 @@
 #include <glm\glm.hpp>
 
 enum ShapeType {
+	JOINT = -1,
 	PLANE = 0,
 	SPHERE,
 	BOX,
@@ -20,6 +21,7 @@ public:
 	virtual void debug() = 0;
 	virtual void makeGizmo() = 0;
 	virtual void resetPosition() {};
+	virtual bool isInside(glm::vec2 pt) { return false; }
 
 	int getShapeID() { return m_shapeID; }
 
