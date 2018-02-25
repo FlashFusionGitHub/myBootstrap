@@ -55,6 +55,11 @@ protected:
 	Box* box4;
 
 	Spring* spring;
+	Spring* spring2;
+	Spring* spring3;
+	Spring* spring4;
+	Spring* spring5;
+	Spring* spring6;
 
 	float m_timer = 0.0f;
 	float m_resetTimer = 0.0f;

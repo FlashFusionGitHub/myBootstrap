@@ -35,7 +35,7 @@ bool JointsAndSpringsApp::startup() {
 	boxTest();
 	springTest();
 
-	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 1);
+	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
 
 	plane = new Plane(glm::vec2(1, 0), 10);
 	plane2 = new Plane(glm::vec2(1, 0), 190);
@@ -176,22 +176,17 @@ void JointsAndSpringsApp::boxTest()
 {
 	m_physicsScene->setTimeStep(0.01f);
 
-	box1 = new Box(glm::vec2(50, 90), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
-	box2 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-	box3 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
-	box4 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-
-	box4->setKinematic(true);
+	box1 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	box2 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
+	box3 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
 
 	m_physicsObject.push_back(box1);
 	m_physicsObject.push_back(box2);
 	m_physicsObject.push_back(box3);
-	m_physicsObject.push_back(box4);
 
 	m_physicsScene->addActor(box1);
 	m_physicsScene->addActor(box2);
 	m_physicsScene->addActor(box3);
-	m_physicsScene->addActor(box4);
 
 }
 
@@ -235,16 +230,47 @@ void JointsAndSpringsApp::spawnCircles(float deltaTime)
 
 void JointsAndSpringsApp::springTest()
 {
-	Sphere* ball = new Sphere(glm::vec2(70, 60), glm::vec2(), 10, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-	Sphere* ball2 = new Sphere(glm::vec2(70, 40), glm::vec2(), 10, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
-	spring = new Spring(ball, ball2, 5, 0.5f, 1);
+	Sphere* ball = new Sphere(glm::vec2(40, 90), glm::vec2(), 10, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	Sphere* ball2 = new Sphere(glm::vec2(160, 90), glm::vec2(), 10, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+
+	Box* box = new Box(glm::vec2(60, 80), glm::vec2(), 10, 5, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	Box* box2 = new Box(glm::vec2(80, 70), glm::vec2(), 10, 5, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	Box* box3 = new Box(glm::vec2(100, 60), glm::vec2(), 10, 5, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	Box* box4 = new Box(glm::vec2(120, 70), glm::vec2(), 10, 5, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	Box* box5 = new Box(glm::vec2(140, 80), glm::vec2(), 10, 5, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+
+	spring = new Spring(ball, box, 15, 1000, 10);
+	spring2 = new Spring(box, box2, 15, 1000, 10);
+	spring3 = new Spring(box2, box3, 15, 1000, 10);
+	spring4 = new Spring(box3, box4, 15, 1000, 10);
+	spring5 = new Spring(box4, box5, 15, 1000, 10);
+	spring6 = new Spring(box5, ball2, 15, 1000, 10);
 
 	ball->setKinematic(true);
+	ball2->setKinematic(true);
 
 	m_physicsObject.push_back(ball);
 	m_physicsObject.push_back(ball2);
 
+	m_physicsObject.push_back(box);
+	m_physicsObject.push_back(box2);
+	m_physicsObject.push_back(box3);
+	m_physicsObject.push_back(box4);
+	m_physicsObject.push_back(box5);
+
 	m_physicsScene->addActor(ball);
 	m_physicsScene->addActor(ball2);
+
+	m_physicsScene->addActor(box);
+	m_physicsScene->addActor(box2);
+	m_physicsScene->addActor(box3);
+	m_physicsScene->addActor(box4);
+	m_physicsScene->addActor(box5);
+
 	m_physicsScene->addActor(spring);
+	m_physicsScene->addActor(spring2);
+	m_physicsScene->addActor(spring3);
+	m_physicsScene->addActor(spring4);
+	m_physicsScene->addActor(spring5);
+	m_physicsScene->addActor(spring6);
 }
