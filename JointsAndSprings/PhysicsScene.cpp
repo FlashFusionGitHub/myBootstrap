@@ -153,8 +153,6 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject * obj1, PhysicsObject * obj2)
 			}
 
 			sphere1->resolveCollision(sphere2, 0.5f * (sphere1->getPosition() + sphere2->getPosition()));
-
-			return true;
 		}
 	}
 
@@ -187,8 +185,6 @@ bool PhysicsScene::sphere2Plane(PhysicsObject * obj1, PhysicsObject *obj2)
 			//set sphere velocity to zero here
 			glm::vec2 contact = sphere->getPosition() + (collisionNormal * -sphere->getRadius());
 			plane->resolveCollision(sphere, contact);
-
-			return true;
 		}
 	}
 
@@ -236,8 +232,6 @@ bool PhysicsScene::box2Box(PhysicsObject *obj1, PhysicsObject *obj2)
 			}
 
 			box->resolveCollision(box2, contact / float(numContacts), &norm);
-
-			return true;
 		}
 	}
 	return false;
@@ -367,7 +361,7 @@ bool PhysicsScene::box2Sphere(PhysicsObject *obj1, PhysicsObject *obj2)
 			float pen = sphere->getRadius() - glm::length(contact - sphere->getPosition());
 			glm::vec2 penVec = glm::normalize(contact - sphere->getPosition()) * pen;
 
-			// move each shape away in the direction of penitration 
+			// move each shape away in the direction of penetration 
 			if (!box->isKinematic() && !sphere->isKinematic()) {
 				box->setPosition(box->getPosition() + penVec*0.5f);
 				sphere->setPosition(sphere->getPosition() - penVec*0.5f); 
@@ -382,7 +376,6 @@ bool PhysicsScene::box2Sphere(PhysicsObject *obj1, PhysicsObject *obj2)
 			box->resolveCollision(sphere, contact, direction);
 		}
 		delete direction;
-		return true;
 	}
 	return false;
 }

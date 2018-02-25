@@ -38,6 +38,10 @@ bool JointsAndSpringsApp::startup() {
 
 	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.8f);
 
+	Sphere* ball2 = new Sphere(glm::vec2(150, 30), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.8f);
+
+	ball2->setKinematic(true);
+
 	plane = new Plane(glm::vec2(1, 0), 10);
 	plane2 = new Plane(glm::vec2(1, 0), 190);
 	plane3 = new Plane(glm::vec2(0, 1), 10);
@@ -51,6 +55,7 @@ bool JointsAndSpringsApp::startup() {
 	m_physicsScene->addActor(plane4);
 
 	m_physicsScene->addActor(ball);
+	m_physicsScene->addActor(ball2);
 
 	return true;
 }
@@ -75,60 +80,74 @@ void JointsAndSpringsApp::update(float deltaTime) {
 		//spawnBoxes(deltaTime);
 		//spawnCircles(deltaTime);
 
+		//Whacking Stick with left mouse button
+		bool mouseDown = input->isMouseButtonDown(0);
+
+		m_mousePoint = glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110);
+
+		if (mouseDown != m_mouseDown) {
+			if (mouseDown) {
+				m_contactPoint = m_mousePoint;
+			}
+			else {
+				for (auto it = m_physicsObject.begin(); it != m_physicsObject.end(); it++) {
+					PhysicsObject* obj = *it;
+
+					if (obj->isInside(m_mousePoint)) {
+						Rigidbody* rb = (Rigidbody*)obj;
+						rb->applyForce(10.0f * (m_mousePoint - m_contactPoint), m_contactPoint - rb->getPosition());
+					}
+				}
+			}
+			m_mouseDown = mouseDown;
+		}
+
+		// Move Objects with right mouse button
+		for (auto it = m_physicsObject.begin(); it != m_physicsObject.end(); it++) {
+			PhysicsObject* obj = *it;
+
+			Rigidbody* rb = (Rigidbody*)obj;
+
+			if (obj->isInside(m_mousePoint) && input->isMouseButtonDown(1)) {
+				rb->setPosition(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110));
+				rb->setVelocity(glm::vec2(0, 0));
+
+				float currentRotation = rb->getRotation();
+
+				if (input->isKeyDown(aie::INPUT_KEY_Q)) {
+					rb->setRotation(currentRotation -= deltaTime * 2.0f);
+				}
+				if (input->isKeyDown(aie::INPUT_KEY_E)) {
+					rb->setRotation(currentRotation += deltaTime * 2.0f);
+				}
+				if (input->wasKeyPressed(aie::INPUT_KEY_DELETE)) {
+					m_physicsScene->removeActor(rb);
+				}
+			}
+		}
+	}
+
+	if (input->wasKeyPressed(aie::INPUT_KEY_C)) {
+		Sphere* sphere = new Sphere(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110),
+			glm::vec2(), 10, 5, 0, glm::vec4(1, 1, 1, 1), 0, 0, 1);
+		m_physicsObject.push_back(sphere);
+		m_physicsScene->addActor(sphere);
+	}
+	if (input->wasKeyPressed(aie::INPUT_KEY_B)) {
+		Box* box = new Box(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110),
+			glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+		m_physicsObject.push_back(box);
+		m_physicsScene->addActor(box);
 	}
 
 	m_physicsScene->updateGizmos();
 
 
-	//Whacking Stick with left mouse button
-	bool mouseDown = input->isMouseButtonDown(0);
-
-	m_mousePoint = glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110);
-
-	if (mouseDown != m_mouseDown) {
-		if (mouseDown) {
-			m_contactPoint = m_mousePoint;
-		}
-		else {
-			for (auto it = m_physicsObject.begin(); it != m_physicsObject.end(); it++) {
-				PhysicsObject* obj = *it;
-
-				if (obj->isInside(m_mousePoint)) {
-					Rigidbody* rb = (Rigidbody*)obj;
-					rb->applyForce(10.0f * (m_mousePoint - m_contactPoint), m_contactPoint - rb->getPosition());
-				}
-			}
-		}
-		m_mouseDown = mouseDown;
-	}
-
-	// Move Objects with right mouse button
-	for (auto it = m_physicsObject.begin(); it != m_physicsObject.end(); it++) {
-		PhysicsObject* obj = *it;
-
-		Rigidbody* rb = (Rigidbody*)obj;
-
-		if (obj->isInside(m_mousePoint) && input->isMouseButtonDown(1)) {
-			rb->setPosition(glm::vec2((float)input->getMouseX() / (float)getWindowWidth() * (float)200, (float)input->getMouseY() / (float)getWindowHeight() * (float)110));
-			rb->setVelocity(glm::vec2(0, 0));
-
-			float currentRotation = rb->getRotation();
-
-			if (input->isKeyDown(aie::INPUT_KEY_Q)) {
-				rb->setRotation(currentRotation -= deltaTime * 2.0f);
-			}
-			if (input->isKeyDown(aie::INPUT_KEY_E)) {
-				rb->setRotation(currentRotation += deltaTime * 2.0f);
-			}
-
-		}
-	}
-
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 
-	if (input->wasKeyPressed(aie::INPUT_KEY_GRAVE_ACCENT)) {
+	if (input->wasKeyPressed(aie::INPUT_KEY_P)) {
 		isPaused = !isPaused;
 	}
 }
@@ -179,7 +198,9 @@ void JointsAndSpringsApp::boxTest()
 
 	box1 = new Box(glm::vec2(50, 70), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
 	box2 = new Box(glm::vec2(50, 50), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
-	box3 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 10, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	box3 = new Box(glm::vec2(50, 30), glm::vec2(0, 0), 10, 20, 10, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+
+	box3->setKinematic(true);
 
 	m_physicsObject.push_back(box1);
 	m_physicsObject.push_back(box2);
@@ -282,16 +303,16 @@ void JointsAndSpringsApp::softBodyTest()
 
 	glm::vec2 position = glm::vec2(40, 60);
 
+	int num = 0;
+
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j < 5; j++) {
-			softbody.push_back(new Sphere(glm::vec2(position.x += 5, position.y), glm::vec2(), 5, 2, 0, glm::vec4(1, 1, 1, 1), 0, 0, 1));
+			softbody.push_back(new Sphere(glm::vec2(position.x += 5, position.y), glm::vec2(), 10, 2, 0, glm::vec4(1, 1, 1, 1), 0, 0, 1));
+			m_physicsScene->addActor(softbody[num]);
+			m_physicsObject.push_back(softbody[num]);
+			num += 1;
 		}
 		position = glm::vec2(40, position.y += 5);
-	}
-
-	for (int i = 0; i < 25; i++) {
-		m_physicsScene->addActor(softbody[i]);
-		m_physicsObject.push_back(softbody[i]);
 	}
 }
 
