@@ -32,10 +32,11 @@ bool JointsAndSpringsApp::startup() {
 	m_physicsScene->setGravity(glm::vec2(0.0f, -9.8f));
 
 	//randomShapes();
-	boxTest();
-	springTest();
+	//boxTest();
+	//springTest();
+	softBodyTest();
 
-	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0);
+	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.8f);
 
 	plane = new Plane(glm::vec2(1, 0), 10);
 	plane2 = new Plane(glm::vec2(1, 0), 190);
@@ -274,3 +275,24 @@ void JointsAndSpringsApp::springTest()
 	m_physicsScene->addActor(spring5);
 	m_physicsScene->addActor(spring6);
 }
+
+void JointsAndSpringsApp::softBodyTest()
+{
+	Spring* connection;
+
+	glm::vec2 position = glm::vec2(40, 60);
+
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			softbody.push_back(new Sphere(glm::vec2(position.x += 5, position.y), glm::vec2(), 5, 2, 0, glm::vec4(1, 1, 1, 1), 0, 0, 1));
+		}
+		position = glm::vec2(40, position.y += 5);
+	}
+
+	for (int i = 0; i < 25; i++) {
+		m_physicsScene->addActor(softbody[i]);
+		m_physicsObject.push_back(softbody[i]);
+	}
+}
+
+

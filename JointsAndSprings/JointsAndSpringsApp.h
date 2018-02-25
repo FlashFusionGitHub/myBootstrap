@@ -28,6 +28,7 @@ public:
 	void spawnCircles(float deltaTime);
 	void springTest();
 
+	void softBodyTest();
 protected:
 
 	aie::Renderer2D*	m_2dRenderer;
@@ -36,6 +37,7 @@ protected:
 	PhysicsScene* m_physicsScene;
 
 	std::vector<Sphere*> spheres;
+	std::vector<Sphere*> softbody;
 	std::vector<Box*> boxes;
 
 	float m_position = 0;
