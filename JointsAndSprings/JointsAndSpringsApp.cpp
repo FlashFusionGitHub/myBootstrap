@@ -305,8 +305,8 @@ void JointsAndSpringsApp::softBodyTest()
 
 	int num = 0;
 
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
 			softbody.push_back(new Sphere(glm::vec2(position.x += 5, position.y), glm::vec2(), 10, 2, 0, glm::vec4(1, 1, 1, 1), 0, 0, 1));
 			m_physicsScene->addActor(softbody[num]);
 			m_physicsObject.push_back(softbody[num]);
@@ -314,6 +314,21 @@ void JointsAndSpringsApp::softBodyTest()
 		}
 		position = glm::vec2(40, position.y += 5);
 	}
+
+	for (int i = 0; i < 2; i++) {
+		connection = new Spring(softbody[i], softbody[i + 1], 6, 100, 10);
+		m_physicsScene->addActor(connection);
+		for (int j = 3; j < 5; j++) {
+			connection = new Spring(softbody[j], softbody[j + 1], 6, 100, 10);
+			m_physicsScene->addActor(connection);
+			for (int k = 6; k < 8; k++) {
+				connection = new Spring(softbody[k], softbody[k + 1], 6, 100, 10);
+				m_physicsScene->addActor(connection);
+			}
+		}
+	}
+
+
 }
 
 
