@@ -18,8 +18,11 @@ Rigidbody::~Rigidbody()
 void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
 
-	if (m_isKinematic)
+	if (m_isKinematic) {
+		m_angularVelocity = 0;
+		m_velocity = glm::vec2(0, 0);
 		return;
+	}
 
 	m_position += m_velocity * timeStep;
 

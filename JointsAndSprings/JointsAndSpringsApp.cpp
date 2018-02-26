@@ -33,26 +33,33 @@ bool JointsAndSpringsApp::startup() {
 
 	//randomShapes();
 	//boxTest();
-	//springTest();
+	springTest();
 	softBodyTest();
 
 	ball = new Sphere(glm::vec2(150, 50), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.8f);
 
 	Sphere* ball2 = new Sphere(glm::vec2(150, 30), glm::vec2(), 10, 5, 0, glm::vec4(1, 0, 0, 1), 0, 0, 0.8f);
+	m_physicsObject.push_back(ball2);
 
 	ball2->setKinematic(true);
 
-	plane = new Plane(glm::vec2(1, 0), 10);
-	plane2 = new Plane(glm::vec2(1, 0), 190);
-	plane3 = new Plane(glm::vec2(0, 1), 10);
-	plane4 = new Plane(glm::vec2(0, 1), 103);
+	//plane = new Plane(glm::vec2(1, 0), 10);
+	//plane2 = new Plane(glm::vec2(1, 0), 190);
+	//plane3 = new Plane(glm::vec2(0, 1), 10);
+	//plane4 = new Plane(glm::vec2(0, 1), 103);
+
+
+	Box* base = new Box(glm::vec2(110, -5),glm::vec2(), 10, 220, 20, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+	base->setKinematic(true);
+	m_physicsObject.push_back(base);
+	m_physicsScene->addActor(base);
 
 	m_physicsObject.push_back(ball);
 
-	m_physicsScene->addActor(plane);
-	m_physicsScene->addActor(plane2);
-	m_physicsScene->addActor(plane3);
-	m_physicsScene->addActor(plane4);
+	//m_physicsScene->addActor(plane);
+	//m_physicsScene->addActor(plane2);
+	//m_physicsScene->addActor(plane3);
+	//m_physicsScene->addActor(plane4);
 
 	m_physicsScene->addActor(ball);
 	m_physicsScene->addActor(ball2);
@@ -299,36 +306,28 @@ void JointsAndSpringsApp::springTest()
 
 void JointsAndSpringsApp::softBodyTest()
 {
-	Spring* connection;
-
-	glm::vec2 position = glm::vec2(40, 60);
-
-	int num = 0;
+	Sphere* balls[3][3];
 
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			softbody.push_back(new Sphere(glm::vec2(position.x += 5, position.y), glm::vec2(), 10, 2, 0, glm::vec4(1, 1, 1, 1), 0, 0, 1));
-			m_physicsScene->addActor(softbody[num]);
-			m_physicsObject.push_back(softbody[num]);
-			num += 1;
-		}
-		position = glm::vec2(40, position.y += 5);
-	}
-
-	for (int i = 0; i < 2; i++) {
-		connection = new Spring(softbody[i], softbody[i + 1], 6, 100, 10);
-		m_physicsScene->addActor(connection);
-		for (int j = 3; j < 5; j++) {
-			connection = new Spring(softbody[j], softbody[j + 1], 6, 100, 10);
-			m_physicsScene->addActor(connection);
-			for (int k = 6; k < 8; k++) {
-				connection = new Spring(softbody[k], softbody[k + 1], 6, 100, 10);
-				m_physicsScene->addActor(connection);
-			}
+			balls[i][j] = new Sphere(glm::vec2((i + 5) * 7, (j + 10) * 7), glm::vec2(), 10, 4, 0, glm::vec4(1, 1, 1, 1), 0, 0, 0);
+			m_physicsScene->addActor(balls[i][j]);
+			m_physicsObject.push_back(balls[i][j]);
 		}
 	}
 
-
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (i < 2)
+				m_physicsScene->addActor(new Spring(balls[i][j], balls[i + 1][j], 10, 100, 10));
+			if (j < 2)
+				m_physicsScene->addActor(new Spring(balls[i][j + 1], balls[i][j], 10, 100, 10));
+			if (i < 2 && j < 2)
+				m_physicsScene->addActor(new Spring(balls[i][j], balls[i + 1][j + 1], 10, 100, 10));
+		    if (i > 0 && j < 2)
+				m_physicsScene->addActor(new Spring(balls[i][j], balls[i - 1][j + 1], 10, 100, 10));
+		}
+	}
 }
 
 
